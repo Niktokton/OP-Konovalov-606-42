@@ -33,28 +33,27 @@ C помощью функции calculate_distance вычисляем расст
 # 2 ЗАДАНИЕ 
 Находиться ли точка в площади окружности.
 ## Решение: 
+from math import sqrt
+
+radius = 42
+print(round(3.1415926 * radius**2, 4))
+point_1 = (23, 34)
+print(sqrt(point_1[0]**2 + point_1[1]** 2) <= radius)
+point_2 = (30, 30)
+print(sqrt(point_2[0]**2 + point_2[1]** 2) <= radius)
+```
+## Объяснение: 
 Вычисляем площадь круга с помощью данного кода и выводим с тончость до 4 знака после запятой.
-```Python
-pi = 3.1415926
-area = pi * (radius ** 2)
-print(round(area, 4))
-```
-Определяем рассттояние от точки, до начала координат и проверяем, находиться ли точка в радиусе круга.
-```Python
-distance_1 = (point_1[0] ** 2 + point_1[1] ** 2) ** 0.5
-is_inside_1 = distance_1 <= radius
-print(is_inside_1)
-```
 ## Скриншот: ![image](https://github.com/user-attachments/assets/4992624c-cfd7-47b4-a013-7b8e05c924b2)
 
 # 3 ЗАДАНИЕ 
 Расставить знаки +, -, * и скобки в выражении 1 ? 2 ? 3 ? 4 ? 5, так чтобы получилось 25.
-## Решение: 
-Методом тыка получаем следующее выражение:
-```Python
-result = ((1 + 2)* 3 - 4) * 5
+## Решение:
+result = ((1 + 2) * 3 - 4) * 5
 print(result)
 ```
+## Объяснение: 
+Подбором находим нужное выражение
 ## Скриншот: ![image](https://github.com/user-attachments/assets/d2256e78-00b9-47b5-9b3c-077c336e7455)
 
 # 4 ЗАДАНИЕ 
@@ -64,33 +63,35 @@ print(result)
 второй 
 второй с конца
 ## Решение: 
-Используя срезы получаем следующее:
-```Python
 my_favorite_movies = 'Терминатор, Пятый элемент, Аватар, Чужие, Назад в будущее'
-print(my_favorite_movies[:10])  # 'Терминатор' Первый фильм
-print(my_favorite_movies[-15:]) # 'Назад в будущее' Последний Фильм
-print(my_favorite_movies[12:25])   # 'Пятый элемент' Второй Фильм
-print(my_favorite_movies[-22:-17]) # 'Чужие' Второй с конца
+print(my_favorite_movies[0:10])
+print(my_favorite_movies[-15:])
+print(my_favorite_movies[12:25])
+print(my_favorite_movies[-22:-17])
 ```
+## Объяснение: 
+Используем срезы
 ## Скриншот: ![image](https://github.com/user-attachments/assets/3c766a73-fe67-483d-9bdb-4d1c38b52f89)
 
 # 5 ЗАДАНИЕ 
 Выведите на консоль рост отца в формате. Выведите на консоль общий рост вашей семьи как сумму ростов всех членов.
 ## Решение: 
-Используя работу со списками получаем следующее:
-```Python
+my_family = ['Отец', 'Мать', 'Сын', 'Дедушка', 'Бабушка']
 my_family_height = [
-    ['Отец', 190],
-    ['Мать', 165],
-    ['Сын', 170],
-    ['Дедушка', 175],
-    ['Бабушка', 160],
+    ['Отец', 187],
+    ['Мать', 168],
+    ['Сын', 174],
+    ['Дедушка', 184],
+    ['Бабушка', 159],
 ]
+
 father_height = next(height for name, height in my_family_height if name == 'Отец')
 print(f'Рост отца - {father_height} см')
 total_height = sum(height for name, height in my_family_height)
 print(f'Общий рост моей семьи - {total_height} см')
 ```
+## Объяснение: 
+Находим рост отца, потом считаем общий рост
 ## Скриншот: ![image](https://github.com/user-attachments/assets/89a84fe0-66cc-4d5e-919d-57b2c4793ca4)
 
 # 6 ЗАДАНИЕ 
