@@ -27,7 +27,7 @@ print(distances)
 ```
 ## Объяснение: 
 C помощью функции calculate_distance вычисляем расстояние между городами и делаем так, чтобы не высчитывалось расстояние между одинаковыми городами, после чего это расстояние заносится в список. После всего этого список выводится.
-## Скриншот: ![image](https://github.com/user-attachments/assets/0c5f282c-3974-45f0-b754-5c64a320b944)
+## Скриншот:
 
 
 # 2 ЗАДАНИЕ 
@@ -44,7 +44,7 @@ print(sqrt(point_2[0]**2 + point_2[1]** 2) <= radius)
 ```
 ## Объяснение: 
 Вычисляем площадь круга с помощью данного кода и выводим с тончость до 4 знака после запятой.
-## Скриншот: ![image](https://github.com/user-attachments/assets/4992624c-cfd7-47b4-a013-7b8e05c924b2)
+## Скриншот:
 
 # 3 ЗАДАНИЕ 
 Расставить знаки +, -, * и скобки в выражении 1 ? 2 ? 3 ? 4 ? 5, так чтобы получилось 25.
@@ -54,7 +54,7 @@ print(result)
 ```
 ## Объяснение: 
 Подбором находим нужное выражение
-## Скриншот: ![image](https://github.com/user-attachments/assets/d2256e78-00b9-47b5-9b3c-077c336e7455)
+## Скриншот:
 
 # 4 ЗАДАНИЕ 
 Выведите на консоль с помощью индексации строки, последовательно:
@@ -71,7 +71,7 @@ print(my_favorite_movies[-22:-17])
 ```
 ## Объяснение: 
 Используем срезы
-## Скриншот: ![image](https://github.com/user-attachments/assets/3c766a73-fe67-483d-9bdb-4d1c38b52f89)
+## Скриншот:
 
 # 5 ЗАДАНИЕ 
 Выведите на консоль рост отца в формате. Выведите на консоль общий рост вашей семьи как сумму ростов всех членов.
@@ -92,32 +92,29 @@ print(f'Общий рост моей семьи - {total_height} см')
 ```
 ## Объяснение: 
 Находим рост отца, потом считаем общий рост
-## Скриншот: ![image](https://github.com/user-attachments/assets/89a84fe0-66cc-4d5e-919d-57b2c4793ca4)
+## Скриншот:
 
 # 6 ЗАДАНИЕ 
 Удаление, добавление, изменение списков.
 ## Решение: 
-Используя методы списков получаем следующее:
-```Python
 zoo = ['lion', 'kangaroo', 'elephant', 'monkey', ]
-zoo.insert(1, 'bear')
+zoo.insert(2, 'bear')
 print(zoo)
-birds = ['rooster', 'ostrich', 'lark']
-zoo.extend(birds)
+birds = ['rooster', 'ostrich', 'lark', ]
+zoo += birds
 print(zoo)
 zoo.remove('elephant')
 print(zoo)
-lion_index = zoo.index('lion') + 1 
-lark_index = zoo.index('lark') + 1 
-print(f'Лев сидит в клетке {lion_index}, жаворонок сидит в клетке {lark_index}.')
+print("Лев - ", zoo.index('lion') + 1)
+print("Жаворонок - ", zoo.index('lark') + 1)
 ```
-## Скриншот: ![image](https://github.com/user-attachments/assets/06b168c5-dc8c-47f3-bfda-b37d9050edac)
+## Объяснение: 
+Работаем с массивами, идем по ходу задачи
+## Скриншот:
 
 # 7 ЗАДАНИЕ 
 Посчитать продолжительность треков, до 2 знаков после запятой.
 ## Решение: 
-Используя методы списков получаем следующее:
-```Python
 violator_songs_list = [
     ['World in My Eyes', 4.86],
     ['Sweetest Perfection', 4.43],
@@ -129,11 +126,11 @@ violator_songs_list = [
     ['Blue Dress', 4.29],
     ['Clean', 5.83],
 ]
-time_halo = next(song[1] for song in violator_songs_list if song[0] == 'Halo')
-time_enjoy = next(song[1] for song in violator_songs_list if song[0] == 'Enjoy the Silence')
-time_clean = next(song[1] for song in violator_songs_list if song[0] == 'Clean')
-total_time_list = round(time_halo + time_enjoy + time_clean, 2)
-print(f'Три песни звучат {total_time_list} минут')
+time = 0
+for song in violator_songs_list:
+    if song[0] == 'Halo' or song[0] == 'Enjoy the Silence' or song[0] == 'Clean':
+        time += song[1]
+print(f'Три песни звучат {round(time, 2)} минут')
 violator_songs_dict = {
     'World in My Eyes': 4.76,
     'Sweetest Perfection': 4.43,
@@ -145,19 +142,23 @@ violator_songs_dict = {
     'Blue Dress': 4.18,
     'Clean': 5.68,
 }
-time_sweetest = violator_songs_dict['Sweetest Perfection']
-time_policy = violator_songs_dict['Policy of Truth']
-time_blue = violator_songs_dict['Blue Dress']
-total_time_dict = round(time_sweetest + time_policy + time_blue, 2)
-print(f'А другие три песни звучат {total_time_dict} минут')
+time = 0
+for song in violator_songs_dict.keys():
+    if song == 'Sweetest Perfection':
+        time += violator_songs_dict['Sweetest Perfection']
+    if song == 'Policy of Truth':
+        time += violator_songs_dict['Policy of Truth']
+    if song == 'Blue Dress':
+        time += violator_songs_dict['Blue Dress']
+print(f'А другие три песни звучат {round(time, 2)} минут')
 ```
-## Скриншот: ![image](https://github.com/user-attachments/assets/ee55c3e0-82d8-408e-96f8-66067e87f119)
+## Объяснение: 
+Используем циклы и ищем совпадения
+## Скриншот:
 
 # 8 ЗАДАНИЕ 
 Расшифровать сообщение
 ## Решение: 
-Используя срезы и работу со списками получаем следующее:
-```Python
 secret_message = [
     'квевтфпп6щ3стмзалтнмаршгб5длгуча',
     'дьсеы6лц2бане4т64ь4б3ущея6втщл6б',
@@ -165,13 +166,132 @@ secret_message = [
     'ьд5фму3ежородт9г686буиимыкучшсал',
     'бсц59мегщ2лятьаьгенедыв9фк9ехб1а',
 ]
-first_word = secret_message[0][3]  
-second_word = secret_message[1][9:13]  
-third_word = secret_message[2][5:15:2]  
-fourth_word = secret_message[3][7:13][::-1]  
-fifth_word = secret_message[4][16:21][::-1]  
-
-decoded_message = f"{first_word} {second_word} {third_word} {fourth_word} {fifth_word}"
-print(decoded_message)
+print(secret_message[0][3], end=' ')
+print(secret_message[1][9:13], end=' ')
+print(secret_message[2][5:15:2], end=' ')
+print(secret_message[3][12:6:-1], end=' ')
+print(secret_message[4][20:15:-1])
 ```
-## Скриншот:![image](https://github.com/user-attachments/assets/9b91482f-c0e4-45db-8633-c5417d9b73f2)
+## Объяснение: 
+Используем срезы как написанно в задании
+## Скриншот:
+
+# 9 ЗАДАНИЕ 
+Определить нужные цветы
+## Решение: 
+garden = ('ромашка', 'роза', 'одуванчик', 'ромашка', 'гладиолус', 'подсолнух', 'роза', )
+meadow = ('клевер', 'одуванчик', 'ромашка', 'клевер', 'мак', 'одуванчик', 'ромашка', )
+garden_set = set(garden)
+meadow_set = set(meadow)
+print(*garden_set)
+print(*meadow_set)
+print(*set(garden + meadow))
+print(*garden_set & meadow_set)
+print(*garden_set - meadow_set)
+print(*meadow_set - garden_set)
+## Объяснение: 
+Работаем с множествами
+## Скриншот:
+
+# 10 ЗАДАНИЕ 
+Создать словарь цен на продукты
+## Решение: 
+shops = {
+    'ашан':
+        [
+            {'name': 'печенье', 'price': 10.99},
+            {'name': 'конфеты', 'price': 34.99},
+            {'name': 'карамель', 'price': 45.99},
+            {'name': 'пирожное', 'price': 67.99}
+        ],
+    'пятерочка':
+        [
+            {'name': 'печенье', 'price': 9.99},
+            {'name': 'конфеты', 'price': 32.99},
+            {'name': 'карамель', 'price': 46.99},
+            {'name': 'пирожное', 'price': 59.99}
+        ],
+    'магнит':
+        [
+            {'name': 'печенье', 'price': 11.99},
+            {'name': 'конфеты', 'price': 30.99},
+            {'name': 'карамель', 'price': 41.99},
+            {'name': 'пирожное', 'price': 62.99}
+        ],
+}
+sweets = {
+    'печенье': [
+        {'shop': 'пятерочка', 'price': 9.99},
+        {'shop': 'ашан', 'price': 10.99},
+    ],
+    'конфеты': [
+        {'shop': 'магнит', 'price': 30.99},
+        {'shop': 'пятерочка', 'price': 32.99},
+    ],
+    'карамель': [
+        {'shop': 'магнит', 'price': 41.99},
+        {'shop': 'ашан', 'price': 45.99},
+    ],
+    'пирожное': [
+        {'shop': 'пятерочка', 'price': 59.99},
+        {'shop': 'магнит', 'price': 62.99},
+    ],
+}
+print(sweets)
+## Объяснение: 
+Смотрим на цены и выбираем самое дешевое
+## Скриншот:
+
+# 11 ЗАДАНИЕ 
+Расчитать сумму товаров
+## Решение: 
+goods = {
+    'Лампа': '12345',
+    'Стол': '23456',
+    'Диван': '34567',
+    'Стул': '45678',
+}
+store = {
+    '12345': [
+        {'quantity': 27, 'price': 42},
+    ],
+    '23456': [
+        {'quantity': 22, 'price': 510},
+        {'quantity': 32, 'price': 520},
+    ],
+    '34567': [
+        {'quantity': 2, 'price': 1200},
+        {'quantity': 1, 'price': 1150},
+    ],
+    '45678': [
+        {'quantity': 50, 'price': 100},
+        {'quantity': 12, 'price': 95},
+        {'quantity': 43, 'price': 97},
+    ],
+}
+lamp_code = goods['Лампа']
+lamps_item = store[lamp_code][0]
+lamps_quantity = lamps_item['quantity']
+lamps_price = lamps_item['price']
+lamps_cost = lamps_quantity * lamps_price
+print('Лампа -', lamps_quantity, 'шт, стоимость', lamps_cost, 'руб')
+
+table_quantity = store[goods['Стол']][0]['quantity'] + store[goods['Стол']][1]['quantity']
+table_cost = store[goods['Стол']][0]['quantity'] * store[goods['Стол']][0]['price'] \
+             + store[goods['Стол']][1]['quantity'] * store[goods['Стол']][1]['price']
+print(f'Стол - {table_quantity}, стоимость {table_cost} руб')
+
+couch_quantity = store[goods['Диван']][0]['quantity'] + store[goods['Диван']][1]['quantity']
+couch_cost = store[goods['Диван']][0]['quantity'] * store[goods['Диван']][0]['price'] \
+             + store[goods['Диван']][1]['quantity'] * store[goods['Диван']][1]['price']
+print(f'Диван - {couch_quantity}, стоимость {couch_cost} руб')
+
+chair_quantity = store[goods['Стул']][0]['quantity'] + store[goods['Стул']][1]['quantity'] \
+                 + store[goods['Стул']][2]['quantity']
+chair_cost = store[goods['Стул']][0]['quantity'] * store[goods['Стул']][0]['price'] \
+             + store[goods['Стул']][1]['quantity'] * store[goods['Стул']][1]['price'] \
+             + store[goods['Стул']][2]['quantity'] * store[goods['Стул']][2]['price']
+print(f'Стул - {chair_quantity}, стоимость {chair_cost} руб')
+## Объяснение: 
+Работаем по примеру
+## Скриншот:
