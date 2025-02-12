@@ -1,5 +1,5 @@
 from _00_distance import distances
-from _01_circle import area
+from _01_circle import area, area_calc
 from _02_operations import result
 from _03_favorite_movies import my_favorite_movies
 from _04_my_family import total_height
@@ -25,5 +25,12 @@ def main():
     print("Задача 10 -", lamps_quantity, table_quantity, couch_quantity, chair_quantity)
 
 
+def func(radius):
+    return (area_calc(radius))
+
+
 if __name__ == "__main__":
     main()
+    print("-----------------------------------------")
+    radius = 10
+    print(func(radius))
