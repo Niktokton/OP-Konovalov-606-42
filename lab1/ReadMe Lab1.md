@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/080d6aa1-0ec0-432a-adfc-613f577a139b)# 1 ЗАДАНИЕ 
+# 1 ЗАДАНИЕ 
 Вычислить расстояние между 3 городами с помощью данной в задании формуле.
 ## Решение: 
 from math import sqrt
