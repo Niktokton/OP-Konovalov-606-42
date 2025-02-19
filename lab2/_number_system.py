@@ -28,6 +28,6 @@ class NumberSystemConverter:
 
 # Решение задачи из примера
 
-converter = NumberSystemConverter(expression="5**36 + 5**24 - 25", base=5, condition='4')
+converter = NumberSystemConverter(expression="5**36 + 5**24 - 25", base=5, condition=4)
 print(converter.count_digits())
 print(converter.get_value_in_base(new_base=5))
