@@ -1,9 +1,9 @@
 class NumberFinder:
-    def __init__(self, n_numbers, comparison_type, target_number, conditions):
+    def __init__(self, n_numbers, comparison_type, target_number, conditions=None):
         self.n_numbers = n_numbers
         self.comparison_type = comparison_type
         self.target_number = target_number
-        self.conditions = conditions
+        self.conditions = conditions or {}
         self.found_numbers = []
 
     def find_numbers(self):
