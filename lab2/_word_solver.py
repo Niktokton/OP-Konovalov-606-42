@@ -24,6 +24,8 @@ class WordSolver:
                     word = first_letter + inner_word + last_letter
                     if self.is_valid(word):
                         total_count += 1
+                        if self.printword == 1:
+                            print(f'{total_count} - {word}')
         return total_count
 
     def generate_inner_words(self):
