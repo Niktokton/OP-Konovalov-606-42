@@ -121,3 +121,67 @@ print(converter.get_value_in_base(new_base=5))
     condition - цифра, количество которой надо посчитать
 ## Скриншот:
 ![image](https://github.com/user-attachments/assets/c7b21bfc-d284-4a38-b179-1173610ec3f4)
+
+# 3 ЗАДАНИЕ 
+Найдите 5 чисел больших 500000, таких, что среди их делителей есть число, оканчивающееся на 8, при этом этот делитель не равен 8 и самому числу. В качестве ответа приведите 5 наименьших чисел, соответствующих условию.
+
+Формат вывода: для каждого из 5 таких найденных чисел в отдельной строке сначала выводится само число, затем минимальный делитель, оканчивающийся на 8, не равный 8 и самому числу.
+## Решение: 
+```
+class NumberFinder:
+    def __init__(self, n_numbers, comparison_type, target_number, conditions=None):
+        self.n_numbers = n_numbers
+        self.comparison_type = comparison_type
+        self.target_number = target_number
+        self.conditions = conditions or {}
+        self.found_numbers = []
+
+    def find_numbers(self):
+        number = self.target_number
+        while len(self.found_numbers) < self.n_numbers:
+            if self.check_conditions(number):
+                self.found_numbers.append(number)
+            if self.comparison_type == 'bigger':
+                number += 1
+            elif self.comparison_type == 'smaller':
+                number -= 1
+
+    def check_conditions(self, number):
+        for divisor in range(18, number // 2 + 1, 10):
+            if number % divisor == 0 and divisor != number:
+                if 'ends_with' in self.conditions:
+                    if str(divisor)[-1] != self.conditions['ends_with']:
+                        return False
+                if 'not_equal_to' in self.conditions:
+                    if divisor == self.conditions['not_equal_to']:
+                        return False
+                return True
+        return False
+
+    def print_results(self):
+        for number in self.found_numbers:
+            for divisor in range(18, number // 2 + 1, 10):
+                if number % divisor == 0 and divisor != number:
+                    print(f"{number} {divisor}")
+                    break
+
+
+# Решение задачи из примера
+
+finder = NumberFinder(n_numbers=5, comparison_type='bigger', target_number=500000,
+                      conditions={'ends_with': '8', 'not_equal_to': 8})
+finder.find_numbers()
+finder.print_results()
+```
+## Объяснение: 
+Создаём класс NumberFinder, внутри которого и будет решение задачи. На входе класс получает несколько обязательных значений и одно необязательное. 
+Обязательные: 
+    n_numbers - количество чисел, которые нужно найти; 
+    comparison_type - тип сравнения (bigger или smaller);
+    target_number - число, относительно которого идет счет
+Необязательное:
+    conditions - условия для задачи(
+        ends_with - на какую цифру заканчивается, пример - 'ends_with': '8'
+        not_equal_to - не равен какому числу, пример - 'not_equal_to': 8)
+## Скриншот:
+![image](https://github.com/user-attachments/assets/409587e6-6b0d-4826-9730-af654cb8edd5)
