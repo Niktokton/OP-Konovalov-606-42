@@ -26,7 +26,7 @@ class NumberSystemConverter:
         return ''.join(str(digit) for digit in reversed(digits))
 
 
-# Пример использования класса
+# Решение задачи из примера
 
 converter = NumberSystemConverter(expression="5**36 + 5**24 - 25", base=5, condition='4')
 print(converter.count_digits())
