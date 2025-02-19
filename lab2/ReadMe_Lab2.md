@@ -64,7 +64,7 @@ print(solver.count_words())
 Создаём класс WordSolver, внутри которого и будет решение задачи. На входе класс получает несколько обязательных и необязательных значений. 
 Обязательные: 
     n_letters - количество букв в слове; 
-    letters - слово, буквы которого используются как алфавит. 
+    letters - слово, буквы которого используются как алфавит
 Необязательные: 
     printword - выводить ли полученные слова (по умолчанию 0, не выводить); 
     conditions - условия для задачи (
@@ -79,17 +79,45 @@ print(solver.count_words())
 Значение выражения 5^36 + 5^24 − 25 записали в системе счисления с основанием 5. Сколько цифр 4 содержится в этой записи?
 ## Решение: 
 ```
+class NumberSystemConverter:
+    def __init__(self, expression, base, condition):
+        self.expression = expression
+        self.base = base
+        self.condition = condition
+        self.result = eval(self.expression)
+
+    def convert_to_base(self):
+        digits = []
+        num = self.result
+        while num > 0:
+            digits.append(num % self.base)
+            num //= self.base
+        return ''.join(str(digit) for digit in reversed(digits))
+
+    def count_digits(self):
+        converted_number = self.convert_to_base()
+        return converted_number.count(str(self.condition))
+
+    def get_value_in_base(self, new_base):
+        digits = []
+        num = self.result
+        while num > 0:
+            digits.append(num % new_base)
+            num //= new_base
+        return ''.join(str(digit) for digit in reversed(digits))
+
+
+# Решение задачи из примера
+
+converter = NumberSystemConverter(expression="5**36 + 5**24 - 25", base=5, condition=4)
+print(converter.count_digits())
+print(converter.get_value_in_base(new_base=5))
 ```
 ## Объяснение: 
-Создаём класс WordSolver, внутри которого и будет решение задачи. На входе класс получает несколько обязательных и необязательных значений. 
+Создаём класс NumberSystemConverter, внутри которого и будет решение задачи. На входе класс получает несколько обязательных значений. 
 Обязательные: 
-    n_letters - количество букв в слове; 
-    letters - слово, буквы которого используются как алфавит. 
-Необязательные: 
-    printword - выводить ли полученные слова (по умолчанию 0, не выводить); 
-    conditions - условия для задачи (
-        first - недопустимые первые буквы, пример - 'first': ['А']; 
-        last - недопустимые последие буквы, пример - 'last': ['Е']; 
-        positions - запрещённые буквы на конкретных позициях, пример - 'positions': {3: ['А']}, примечание - указывается не индекс, а номер буквы, то есть отсчёт идет с 1, а не с 0; 
-        occurrences - требуемая частота появления, пример - 'occurrences': {'Г': 1})
+    expression - выражение в формате str; 
+    base - система счисления, в которой будет записанно значение выражения;
+    condition - цифра, количество которой надо посчитать
 ## Скриншот:
+![image](https://github.com/user-attachments/assets/c7b21bfc-d284-4a38-b179-1173610ec3f4)
