@@ -76,7 +76,7 @@ print(solver.count_words())
 ![image](https://github.com/user-attachments/assets/108ce74a-5555-4a49-828a-704ed644a587)
 
 # 2 ЗАДАНИЕ 
-Значение выражения 5^36 + 5^24 − 25 записали в системе счисления с основанием 5. Сколько цифр 4 содержится в этой записи?
+Значение выражения $5^{36} + 5^{24} − 25$ записали в системе счисления с основанием 5. Сколько цифр 4 содержится в этой записи?
 ## Решение: 
 ```
 class NumberSystemConverter:
@@ -185,3 +185,5 @@ finder.print_results()
         not_equal_to - не равен какому числу, пример - 'not_equal_to': 8)
 ## Скриншот:
 ![image](https://github.com/user-attachments/assets/409587e6-6b0d-4826-9730-af654cb8edd5)
+# Источники:
+[Нейросеть ГигаЧат](https://giga.chat/gigachat/)
