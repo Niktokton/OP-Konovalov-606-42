@@ -5,6 +5,8 @@
 def intersect(list1, list2):  # Рекурсия
     if not list1 or not list2:
         return []
+    list1 = list(set(list1))
+    list2 = list(set(list2))
     tmp = list1[0]
     if tmp in list2:
         return [tmp] + intersect(list1[1:], list2)
