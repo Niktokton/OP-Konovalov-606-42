@@ -16,7 +16,7 @@ def intersect_2(list1, list2):  # Рекурсия
 
 print(intersect_1([1, 2, 3, 4], [2, 3, 4, 6, 8]))
 print(intersect_1([5, 8, 2], [2, 9, 1]))
-print(intersect_!([5, 8, 2], [7, 4]))
+print(intersect_1([5, 8, 2], [7, 4]))
 
 print(intersect_2([1, 2, 3, 4], [2, 3, 4, 6, 8]))
 print(intersect_2([5, 8, 2], [2, 9, 1]))
