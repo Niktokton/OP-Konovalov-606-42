@@ -2,10 +2,13 @@ def cache_decorator(func):
     cache = {}
     counter = 0
 
-    def cached_func():
+    def cached_func(n=''):
         nonlocal counter
         if counter not in cache:
             cache[counter] = func()
+        print(cache)
+        if n:
+            return cache[n]
         counter += 1
         return cache[counter - 1]
 
@@ -28,3 +31,4 @@ def fibonacci():
 fib_gen = fibonacci()
 for _ in range(10):
     print(fib_gen())
+print(fib_gen(4))
