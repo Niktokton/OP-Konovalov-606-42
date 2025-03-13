@@ -1,58 +1,51 @@
 import pytest
+
 from rare import generate_password, invert_case
 
 
-@pytest.mark.parametrize(
-    "length, expected_len",
-    [
-        (5, 5),
-        (10, 10),
-        (15, 15),
-        (20, 20),
-    ],
-)
-def test_generate_password_length(length, expected_len):
-    password = generate_password(length)
-    assert len(password) == expected_len
+# Тест для проверки ошибки при короткой длине пароля
+def test_short_password():
+    short_length = 5
+    expected_result = "Ошибка! Длинна пароля слишком короткая"
+    actual_result = next(generate_password(short_length))
+    assert actual_result == expected_result
 
 
-@pytest.mark.parametrize(
-    "char, expected",
-    [
-        ("A", "a"),
-        ("b", "B"),
-        ("1", "1"),
-        ("!", "!"),
-    ],
-)
-def test_invert_case_functionality(char, expected):
-    result = invert_case(char)
-    assert result == expected
+# Тест для проверки генерации пароля правильной длины
+def test_correct_length():
+    correct_length = 12
+    password = next(generate_password(correct_length))
+    assert len(password) == correct_length
 
 
-@pytest.fixture
-def generated_password():
-    return generate_password(10)
+# Тест для проверки инверсии регистра
+def test_inversion():
+    input_char = 'A'
+    expected_output = 'a'
+    actual_output = invert_case(input_char)
+    assert actual_output == expected_output
+
+    input_char = 'a'
+    expected_output = 'A'
+    actual_output = invert_case(input_char)
+    assert actual_output == expected_output
 
 
-def test_contains_upper_and_lower(generated_password):
-    has_upper = any(c.isupper() for c in generated_password)
-    has_lower = any(c.islower() for c in generated_password)
-    assert has_upper and has_lower
+# Тест для проверки разнообразия символов в пароле
+def test_symbol_variety():
+    password_length = 16
+    password = next(generate_password(password_length))
 
+    # Проверка наличия цифр
+    assert any(char.isdigit() for char in password)
 
-def test_contains_digit(generated_password):
-    has_digit = any(c.isdigit() for c in generated_password)
-    assert has_digit
+    # Проверка наличия букв
+    assert any(char.isalpha() for char in password)
 
+    # Проверка наличия специальных символов
+    special_chars = '!@#$%^&*()_+{}:"<>?|'
+    assert any(char in special_chars for char in password)
 
-def test_contains_special_char(generated_password):
-    special_chars = set(r"!@#$%^&*()_+{}:\"<>?|")
-    has_special = any(c in special_chars for c in generated_password)
-    assert has_special
-
-
-def test_contains_punctuation(generated_password):
-    punctuation_chars = set(",.;:")
-    has_punctuation = any(c in punctuation_chars for c in generated_password)
-    assert has_punctuation
+    # Проверка наличия знаков препинания
+    punctuation_chars = ',.;:'
+    assert any(char in punctuation_chars for char in password)

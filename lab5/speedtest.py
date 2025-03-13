@@ -13,11 +13,11 @@ def measure_time(func, length, iterations):
 
 
 if __name__ == "__main__":
-    LENGTH = 20
-    ITERATIONS = 1000
+    LENGTH = 200
+    ITERATIONS = 10000
     original_time = measure_time(generate_password, LENGTH, ITERATIONS)
-    print(f"Время выполнения оригинальной функции: {original_time:.4f} секунд")
+    print(f"Время выполнения оригинальной функции: {original_time} секунд")
     threaded_time = measure_time(generate_password_thread, LENGTH, ITERATIONS)
-    print(f"Время выполнения многопоточной функции: {threaded_time:.4f} секунд")
+    print(f"Время выполнения многопоточной функции: {threaded_time} секунд")
     speedup = original_time / threaded_time
     print(f"Ускорение: {speedup:.2f}x")
