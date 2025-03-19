@@ -1,4 +1,4 @@
-from .constants import ELECTRON_CHARGE, PROTON_MASS, NEUTRON_MASS, ELECTRON_MASS
+from .constants import ELECTRON_CHARGE, PROTON_CHARGE, PROTON_MASS, NEUTRON_MASS, ELECTRON_MASS
 from .calculations import calculate_specific_charge, calculate_compton_wavelength
 
 
@@ -24,7 +24,7 @@ class Electron(Particle):
 
 class Proton(Particle):
     def __init__(self):
-        super().__init__("Протон", PROTON_MASS, 1.602176634e-19)
+        super().__init__("Протон", PROTON_MASS, PROTON_CHARGE)
 
 
 class Neutron(Particle):
