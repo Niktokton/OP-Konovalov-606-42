@@ -85,6 +85,9 @@ class MainWindow(tk.Tk):
 
         display_last_record(self)
 
+    def __repr__(self):
+        return f"<MainWindow title='{self.title()}'>"
+
     def calculate_properties(self):
         create_database()
         selected_particle = self.particle_var.get()
