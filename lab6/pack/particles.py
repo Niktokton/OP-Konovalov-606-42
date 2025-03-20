@@ -8,6 +8,9 @@ class Particle:
         self.mass = mass
         self.charge = charge
 
+    def __repr__(self):
+        pass
+
     @property
     def specific_charge(self):
         return calculate_specific_charge(self.mass, self.charge)

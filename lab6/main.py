@@ -66,20 +66,21 @@ class MainWindow(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Физические расчеты")
-        self.geometry("400x250")
+        self.geometry("1200x750")
 
         self.particle_var = tk.StringVar()
         self.particle_var.set("Выберите частицу")
         particle_menu = tk.OptionMenu(self, self.particle_var, "Электрон", "Протон", "Нейтрон")
         particle_menu.pack(pady=20)
+        particle_menu.config(font='Times 20')
 
-        calculate_button = tk.Button(self, text="Рассчитать", command=self.calculate_properties)
+        calculate_button = tk.Button(self, text="Рассчитать", font='Times 20', command=self.calculate_properties)
         calculate_button.pack(pady=10)
 
-        self.result_label = tk.Label(self, text="", justify=tk.LEFT)
+        self.result_label = tk.Label(self, text="", font='Times 20', justify=tk.LEFT)
         self.result_label.pack(padx=20, pady=(10, 0))
 
-        save_xls_button = tk.Button(self, text="Сохранить в XLS",
+        save_xls_button = tk.Button(self, text="Сохранить в XLS", font='Times 20',
                                     command=lambda: create_report(self.result_label['text'], '.xls'))
         save_xls_button.pack(pady=10)
 
