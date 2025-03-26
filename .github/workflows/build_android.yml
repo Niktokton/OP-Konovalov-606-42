@@ -1,0 +1,35 @@
+name: Build Android APK with Kivy
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install buildozer
+
+      - name: Run Buildozer
+        run: |
+          cd lab7
+          buildozer -v android debug
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk-file
+          path: bin/*.apk
