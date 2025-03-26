@@ -1,7 +1,14 @@
 import tkinter as tk
 from pack.particles import Electron, Proton, Neutron
-import sqlite3
+import psycopg2
 from openpyxl import Workbook
+
+DB_CONFIG = {
+    'host': 'localhost',
+    'database': 'my_database',
+    'user': 'postgres',
+    'password': '1234'
+}
 
 
 def create_report(results, file_format):
@@ -19,39 +26,49 @@ def create_report(results, file_format):
 
 
 def create_database():
-    conn = sqlite3.connect('history.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS history (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            particle_type TEXT NOT NULL,
-            specific_charge REAL,
-            compton_wavelength REAL,
-            timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS history (
+                id SERIAL PRIMARY KEY,
+                particle_type TEXT NOT NULL,
+                specific_charge DOUBLE PRECISION,
+                compton_wavelength DOUBLE PRECISION,
+                timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        ''')
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Ошибка при создании таблицы: {e}")
 
 
 def save_to_db(particle_name, specific_charge, compton_wavelength):
-    conn = sqlite3.connect('history.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        INSERT INTO history (particle_type, specific_charge, compton_wavelength)
-        VALUES (?, ?, ?)
-    ''', (particle_name, specific_charge, compton_wavelength))
-    conn.commit()
-    conn.close()
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO history (particle_type, specific_charge, compton_wavelength)
+            VALUES (%s, %s, %s);
+        ''', (particle_name, specific_charge, compton_wavelength))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Ошибка при вставке записи: {e}")
 
 
 def get_last_record():
-    conn = sqlite3.connect('history.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM history ORDER BY id DESC LIMIT 1')
-    last_record = cursor.fetchone()
-    conn.close()
-    return last_record
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM history ORDER BY id DESC LIMIT 1')
+        last_record = cursor.fetchone()
+        conn.close()
+        return last_record
+    except Exception as e:
+        print(f"Ошибка при получении последней записи: {e}")
+        return None
 
 
 def display_last_record(self):
