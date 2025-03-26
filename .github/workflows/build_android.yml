@@ -27,10 +27,8 @@ jobs:
         run: |
           wget https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip
           unzip commandlinetools-linux-6609375_latest.zip
-          export ANDROID_HOME=$HOME/.android
-          export PATH=$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:$PATH
-          yes | $ANDROID_HOME/tools/bin/sdkmanager --licenses
-          yes | $ANDROID_HOME/tools/bin/sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2"
+          yes | ./tools/bin/sdkmanager --licenses
+          yes | ./tools/bin/sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2" "ndk;23.1.7779620"
 
       - name: Verify sdkmanager presence
         run: |
