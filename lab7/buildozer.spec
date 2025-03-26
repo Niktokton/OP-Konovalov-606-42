@@ -9,7 +9,7 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # Android specific
-android.arch = armeabi-v7a,arm64-v8a
+android.archs = armeabi-v7a,arm64-v8a
 android.api = 21
 android.minapi = 21
 android.ndk = 19c
