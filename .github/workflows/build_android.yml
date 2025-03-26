@@ -1,5 +1,4 @@
 name: Build Android APK with Kivy
-
 on:
   push:
     branches:
@@ -29,7 +28,7 @@ jobs:
           buildozer -v android debug
 
       - name: Upload APK artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: apk-file
           path: bin/*.apk
