@@ -10,9 +10,9 @@ version = 0.1
 
 # Android specific
 android.archs = armeabi-v7a,arm64-v8a
-android.api = 21
-android.minapi = 21
-android.ndk = 19c
+android.api = 31
+android.minapi = 31
+android.ndk = 27c
 android.sdk = 20
 android.permissions = INTERNET
 
