@@ -12,7 +12,7 @@ version = 0.1
 android.archs = armeabi-v7a,arm64-v8a
 android.api = 31
 android.minapi = 31
-android.ndk = 27c
+android.ndk = 25c
 android.sdk = 20
 android.permissions = INTERNET
 
