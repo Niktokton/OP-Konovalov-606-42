@@ -22,13 +22,6 @@ jobs:
       - name: Install dependencies
         run: |
           pip install buildozer cython
-
-      - name: Install Android SDK and NDK
-        run: |
-          wget https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip
-          unzip commandlinetools-linux-6609375_latest.zip
-          yes | tools/bin/sdkmanager --licenses
-          yes | tools/bin/sdkmanager "platform-tools" "platforms;android-29" "build-tools;29.0.2" "ndk;23.1.7779620"
                 
       - name: Run Buildozer
         run: |
