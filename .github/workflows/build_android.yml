@@ -26,7 +26,7 @@ jobs:
       - name: Run Buildozer
         run: |
           cd lab7
-          echo y | buildozer -v android debug
+          echo y | buildozer -v android debug deploy run
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4.6.2
