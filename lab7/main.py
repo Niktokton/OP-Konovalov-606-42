@@ -1,9 +1,7 @@
-import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import StringProperty, ObjectProperty
 from kivy.lang import Builder
-
 from pack.particles import Electron, Proton, Neutron
 import psycopg2
 from openpyxl import Workbook
@@ -59,15 +57,13 @@ class MyWidget(BoxLayout):
     spinner_value = ObjectProperty(None)
 
     def update_result(self):
-        """Обновляем результат после выбора частицы"""
         if self.ids.spinner.text != 'Выберите частицу':
             self.result_text = f'{self.ids.spinner.text}'
 
     def calculate_properties(self):
-        """Метод расчета свойств частиц"""
+        global tmp
         create_database()
-        selected_particle = self.ids.spinner.text  # Исправлено на self.ids.spinner.text
-
+        selected_particle = self.ids.spinner.text
         if selected_particle == "Электрон":
             particle = Electron()
         elif selected_particle == "Протон":
@@ -83,6 +79,7 @@ class MyWidget(BoxLayout):
                       f"Комптоновская длина волны: {particle.compton_wavelength:.2e} м"
 
         self.ids.result_label.text = result_text
+        tmp = result_text
         save_to_db(selected_particle, particle.specific_charge, particle.compton_wavelength)
 
         result_text = f"{particle.name}\n" \
@@ -93,14 +90,15 @@ class MyWidget(BoxLayout):
         save_to_db(selected_particle, particle.specific_charge, particle.compton_wavelength)
 
     def save_results(self, file_format):
-        """Метод сохранения результатов в формате .xls"""
         create_report(self.ids.result_label.text, file_format)
 
     def __repr__(self):
-        return f"MyWidget(result_text={self.result_text}, spinner_value={self.spinner_value})"
+        global tmp
+        return f"MyWidget(result_text={tmp}, spinner_value={self.spinner_value})"
 
     def __str__(self):
-        return f"Result Text: {self.result_text}"
+        global tmp
+        return f"Result Text: {tmp}"
 
 
 class MyApp(App):
@@ -169,4 +167,8 @@ def get_last_record():
 
 
 if __name__ == '__main__':
+    tmp = ''
     MyApp().run()
+    print(MyWidget())
+    widget = MyWidget()
+    print(repr(widget))
