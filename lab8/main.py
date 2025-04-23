@@ -692,10 +692,12 @@ def play_game(db, player1_name, player2_name):
             db.save_score(player1_name, "Победа игрока", player2_name)
             show_message_at_rect_center(
                 "ВЫ ВЫИГРАЛИ!", (0, 0, size[0], size[1]), game_over_font)
+            return
         if not human_ships_set:
             db.save_score(player1_name, "Победа компьютера", player2_name)
             show_message_at_rect_center(
                 "ВЫ ПРОИГРАЛИ!", (0, 0, size[0], size[1]), game_over_font)
+            return
         pygame.display.update()
 
 
