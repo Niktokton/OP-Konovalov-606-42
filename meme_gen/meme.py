@@ -2,7 +2,9 @@ import os
 import random
 import shutil
 import datetime
+from io import BytesIO
 import pygame
+import win32clipboard
 from PIL import Image, ImageDraw, ImageFont
 import sqlite3
 import tkinter as tk
@@ -205,10 +207,10 @@ class MemeGeneratorApp:
         self.current_meme = None
 
         self.buttons = []
-        self.create_button = None
-        self.save_clipboard_button = None
-        self.download_button = None
-        self.clear_cache_button = None
+        self.create_button = pygame.Rect(self.WINDOW_WIDTH // 2 - 100, 250, 200, 40)
+        self.save_clipboard_button = pygame.Rect(50, 400, 200, 40)
+        self.download_button = pygame.Rect(50, 500, 200, 40)
+        self.clear_cache_button = pygame.Rect(50, 600, 200, 40)
 
         self.mem_gen_up = MemUp(self.TEXTS_FOLDER, self.IMAGE_FOLDER, self.DB_PATH, self.SAVE_FOLDER)
         self.mem_gen_down = MemDown(self.TEXTS_FOLDER, self.IMAGE_FOLDER, self.DB_PATH, self.SAVE_FOLDER)
@@ -292,7 +294,7 @@ class MemeGeneratorApp:
                 except Exception as e:
                     self.show_error_message(screen, str(e))
             elif self.clear_cache_button.collidepoint(pos):
-                self.confirm_clear_cache = True
+                self.clear_cache()
 
         while running:
             for event in pygame.event.get():
@@ -321,47 +323,18 @@ class MemeGeneratorApp:
             text_surface = font.render("Создать мем", True, BLACK)
             screen.blit(text_surface, self.create_button.topleft)
 
-            pygame.draw.rect(screen, GREY, self.save_clipboard_button)
+            self.save_clipboard_button = pygame.Rect(50, 400, 350, 40)
+            pygame.draw.rect(screen, WHITE, self.save_clipboard_button)
             text_surface = font.render("Сохранить в буфер обмена", True, BLACK)
             screen.blit(text_surface, self.save_clipboard_button.topleft)
 
-            pygame.draw.rect(screen, GREY, self.download_button)
+            pygame.draw.rect(screen, WHITE, self.download_button)
             text_surface = font.render("Скачать", True, BLACK)
             screen.blit(text_surface, self.download_button.topleft)
 
-            pygame.draw.rect(screen, self.GREY, self.clear_cache_button)
+            pygame.draw.rect(screen, self.WHITE, self.clear_cache_button)
             text_surface = font.render("Очистить кэш", True, self.BLACK)
             screen.blit(text_surface, self.clear_cache_button.topleft)
-
-            if self.confirm_clear_cache:
-                confirm_box = pygame.Rect(self.WINDOW_WIDTH // 2 - 150, self.WINDOW_HEIGHT // 2 - 50, 300, 100)
-                pygame.draw.rect(screen, self.WHITE, confirm_box)
-                pygame.draw.rect(screen, self.BLACK, confirm_box, 2)
-
-                yes_btn = pygame.Rect(confirm_box.left + 50, confirm_box.top + 50, 80, 30)
-                no_btn = pygame.Rect(confirm_box.right - 130, confirm_box.top + 50, 80, 30)
-
-                pygame.draw.rect(screen, self.GREEN, yes_btn)
-                pygame.draw.rect(screen, self.RED, no_btn)
-
-                font = pygame.font.SysFont(None, 24)
-                text_surface = font.render("Вы действительно хотите очистить кэш?", True, self.BLACK)
-                screen.blit(text_surface,
-                            (confirm_box.centerx - text_surface.get_width() // 2, confirm_box.centery - 30))
-
-                text_surface = font.render("Да", True, self.BLACK)
-                screen.blit(text_surface, yes_btn.midtop)
-
-                text_surface = font.render("Нет", True, self.BLACK)
-                screen.blit(text_surface, no_btn.midtop)
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    mouse_pos = pygame.mouse.get_pos()
-                    if yes_btn.collidepoint(mouse_pos):
-                        self.clear_cache()
-                        self.confirm_clear_cache = False
-                    elif no_btn.collidepoint(mouse_pos):
-                        self.confirm_clear_cache = False
 
             if self.meme_generated:
                 screen.blit(self.current_meme, (544, 320))
@@ -403,8 +376,26 @@ class MemeGeneratorApp:
 
         self.show_meme_in_window(screen, meme_image)
 
+    def copy_image_to_clipboard(self, pil_image):
+        output = BytesIO()
+        pil_image.convert("RGB").save(output, "BMP")
+        data = output.getvalue()[14:]
+
+        win32clipboard.OpenClipboard()
+        win32clipboard.EmptyClipboard()
+        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, data)
+        win32clipboard.CloseClipboard()
+
     def save_to_clipboard(self):
-        pass
+        if not self.meme_generated:
+            raise MemeNotGeneratedError("Мем ещё не создан.")
+
+        pil_image = Image.frombytes(mode='RGBA',
+                                    size=self.current_meme.get_size(),
+                                    data=pygame.image.tostring(self.current_meme, 'RGBA'))
+
+        self.copy_image_to_clipboard(pil_image)
+        print("Изображение успешно скопировано в буфер обмена.")
 
     def download_meme(self):
         if not self.meme_generated:
