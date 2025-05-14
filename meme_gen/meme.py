@@ -1,9 +1,12 @@
 import os
 import random
+import shutil
+import datetime
 import pygame
 from PIL import Image, ImageDraw, ImageFont
 import sqlite3
-import win32clipboard
+import tkinter as tk
+from tkinter import filedialog
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -35,15 +38,157 @@ class MemeNotGeneratedError(Exception):
     pass
 
 
+class MemGen:
+    def __init__(self, texts_folder, image_folder, db_path, save_folder):
+        self.theme = None
+        self.texts_folder = texts_folder
+        self.image_folder = image_folder
+        self.db_path = db_path
+        self.save_folder = save_folder
+
+    def select_random_text(self, mood):
+        self.theme = mood
+        text_file = os.path.join(self.texts_folder, f"{mood.lower()}.txt")
+        with open(text_file, encoding="utf-8") as file:
+            lines = file.readlines()
+            return random.choice(lines).strip()
+
+    def select_random_image(self):
+        images = os.listdir(self.image_folder)
+        return os.path.join(self.image_folder, random.choice(images))
+
+
+def wrap_text(draw, text, font, max_width):
+    words = text.split()
+    current_line = ''
+    wrapped_lines = []
+    for word in words:
+        test_line = current_line + word + ' '
+        bbox = draw.textbbox((0, 0), test_line, font=font)
+        line_width = bbox[2] - bbox[0]
+        if line_width > max_width:
+            wrapped_lines.append(current_line.strip())
+            current_line = word + ' '
+        else:
+            current_line += word + ' '
+    if current_line.strip():
+        wrapped_lines.append(current_line.strip())
+    return wrapped_lines
+
+
+class MemUp(MemGen):
+    def add_text_to_image(self, image_path, text):
+        original_image = Image.open(image_path).convert('RGBA')
+        width, height = original_image.size
+
+        text_area_height = 128
+        new_height = height + text_area_height
+        new_image = Image.new('RGBA', (width, new_height), (0, 0, 0))
+        new_image.paste(original_image, (0, text_area_height))
+
+        draw = ImageDraw.Draw(new_image)
+        font = ImageFont.truetype("arial.ttf", size=26)
+
+        wrapped_lines = wrap_text(draw, text, font, width)
+
+        line_spacing = font.getbbox("A")[3]
+        total_height = len(wrapped_lines) * line_spacing
+        first_line_top = (text_area_height - total_height) / 2
+
+        for idx, line in enumerate(wrapped_lines):
+            _, _, line_right, line_bottom = draw.textbbox((0, 0), line, font=font)
+            line_width = line_right - _
+            x = (width - line_width) / 2
+            y = first_line_top + idx * line_spacing
+            draw.text((x, y), line, fill=(255, 255, 255), font=font)
+
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM memes")
+        count = cursor.fetchone()[0]
+        next_number = count + 1
+
+        filename = f'mem_{next_number:04d}.png'
+        full_save_path = os.path.join(self.save_folder, filename)
+
+        new_image.save(full_save_path)
+        print(f"Сохранено: {full_save_path}")
+
+        direction = "Up"
+        cursor.execute("""
+                    INSERT INTO memes (id, theme, direction, creation_date, filename, path)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (next_number, self.theme, direction, now, filename, full_save_path))
+        conn.commit()
+        conn.close()
+
+        return new_image
+
+
+class MemDown(MemGen):
+    def add_text_to_image(self, image_path, text):
+        original_image = Image.open(image_path).convert('RGBA')
+        width, height = original_image.size
+
+        text_area_height = 128
+        new_height = height + text_area_height
+        new_image = Image.new('RGBA', (width, new_height), (0, 0, 0))
+        new_image.paste(original_image, (0, 0))
+
+        draw = ImageDraw.Draw(new_image)
+        font = ImageFont.truetype("arial.ttf", size=26)
+
+        wrapped_lines = wrap_text(draw, text, font, width)
+
+        line_spacing = font.getbbox("A")[3]
+        total_height = len(wrapped_lines) * line_spacing
+        last_line_bottom = height + (
+                text_area_height - total_height) / 2
+
+        for idx, line in enumerate(reversed(wrapped_lines)):
+            _, _, line_right, line_bottom = draw.textbbox((0, 0), line, font=font)
+            line_width = line_right - _
+            x = (width - line_width) / 2
+            y = last_line_bottom - idx * line_spacing
+            draw.text((x, y), line, fill=(255, 255, 255), font=font)
+
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM memes")
+        count = cursor.fetchone()[0]
+        next_number = count + 1
+
+        filename = f'mem_{next_number:04d}.png'
+        full_save_path = os.path.join(self.save_folder, filename)
+
+        new_image.save(full_save_path)
+        print(f"Сохранено: {full_save_path}")
+
+        direction = "Down"
+        cursor.execute("""
+                    INSERT INTO memes (id, theme, direction, creation_date, filename, path)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                """, (next_number, self.theme, direction, now, filename, full_save_path))
+        conn.commit()
+        conn.close()
+
+        return new_image
+
+
 class MemeGeneratorApp:
     def __init__(self):
         self.WINDOW_WIDTH = WINDOW_WIDTH
         self.WINDOW_HEIGHT = WINDOW_HEIGHT
         self.FPS = FPS
-
+        self.GREY = (128, 128, 128)
         self.WHITE = (255, 255, 255)
         self.BLACK = (0, 0, 0)
         self.RED = (255, 0, 0)
+        self.GREEN = (0, 255, 0)
 
         self.IMAGE_FOLDER = 'img'
         self.TEXTS_FOLDER = 'texts/'
@@ -53,13 +198,9 @@ class MemeGeneratorApp:
         self.DB_PATH = 'memes.db'
         self.setup_database()
 
-        self.MOOD_OPTIONS = [
-            'Без темы', 'IT',
-            'Студенты', 'DnD',
-            'Животные', 'Локальные'
-        ]
+        self.THEME_OPTIONS = ['Без темы', 'IT', 'Студенты', 'DnD', 'Животные', 'Локальные']
 
-        self.selected_mood = None
+        self.selected_theme = None
         self.meme_generated = False
         self.current_meme = None
 
@@ -67,6 +208,17 @@ class MemeGeneratorApp:
         self.create_button = None
         self.save_clipboard_button = None
         self.download_button = None
+        self.clear_cache_button = None
+
+        self.mem_gen_up = MemUp(self.TEXTS_FOLDER, self.IMAGE_FOLDER, self.DB_PATH, self.SAVE_FOLDER)
+        self.mem_gen_down = MemDown(self.TEXTS_FOLDER, self.IMAGE_FOLDER, self.DB_PATH, self.SAVE_FOLDER)
+
+        self.confirm_clear_cache = False
+        self.answer_confirm = None
+
+        self.current_direction = None
+
+        self.meme_visible = False
 
     def setup_database(self):
         try:
@@ -75,13 +227,17 @@ class MemeGeneratorApp:
             cursor.execute('''
                 CREATE TABLE IF NOT EXISTS memes (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    mood TEXT
+                    theme TEXT,
+                    direction TEXT,          -- Новое поле: направление (Up или Down)
+                    creation_date DATETIME, -- Новое поле: дата создания
+                    filename TEXT,          -- Новое поле: имя файла
+                    path TEXT               -- Новое поле: полный путь
                 )
             ''')
             conn.commit()
             conn.close()
         except Exception as e:
-            raise DatabaseConnectionError(f"Ошибка подключения к базе данных: {e}")
+            raise Exception(f"Ошибка подключения к базе данных: {e}")
 
     def run(self):
         pygame.init()
@@ -113,10 +269,12 @@ class MemeGeneratorApp:
 
         self.download_button = pygame.Rect(50, 500, 200, 40)
 
+        self.clear_cache_button = pygame.Rect(50, 600, 200, 40)
+
         def handle_click(pos):
             for i, rect in enumerate(self.buttons):
                 if rect.collidepoint(pos):
-                    self.selected_mood = self.MOOD_OPTIONS[i]
+                    self.selected_theme = self.THEME_OPTIONS[i]
                     break
             if self.create_button.collidepoint(pos):
                 try:
@@ -133,6 +291,8 @@ class MemeGeneratorApp:
                     self.download_meme()
                 except Exception as e:
                     self.show_error_message(screen, str(e))
+            elif self.clear_cache_button.collidepoint(pos):
+                self.confirm_clear_cache = True
 
         while running:
             for event in pygame.event.get():
@@ -151,9 +311,9 @@ class MemeGeneratorApp:
             screen.blit(text_surface, (10, 10))
 
             for i, rect in enumerate(self.buttons):
-                color = BLACK if self.selected_mood == self.MOOD_OPTIONS[i] else WHITE
+                color = BLACK if self.selected_theme == self.THEME_OPTIONS[i] else WHITE
                 pygame.draw.rect(screen, color, rect)
-                text_surface = font.render(self.MOOD_OPTIONS[i], True,
+                text_surface = font.render(self.THEME_OPTIONS[i], True,
                                            self.BLACK if color == self.WHITE else self.WHITE)
                 screen.blit(text_surface, rect.topleft)
 
@@ -169,132 +329,137 @@ class MemeGeneratorApp:
             text_surface = font.render("Скачать", True, BLACK)
             screen.blit(text_surface, self.download_button.topleft)
 
+            pygame.draw.rect(screen, self.GREY, self.clear_cache_button)
+            text_surface = font.render("Очистить кэш", True, self.BLACK)
+            screen.blit(text_surface, self.clear_cache_button.topleft)
+
+            if self.confirm_clear_cache:
+                confirm_box = pygame.Rect(self.WINDOW_WIDTH // 2 - 150, self.WINDOW_HEIGHT // 2 - 50, 300, 100)
+                pygame.draw.rect(screen, self.WHITE, confirm_box)
+                pygame.draw.rect(screen, self.BLACK, confirm_box, 2)
+
+                yes_btn = pygame.Rect(confirm_box.left + 50, confirm_box.top + 50, 80, 30)
+                no_btn = pygame.Rect(confirm_box.right - 130, confirm_box.top + 50, 80, 30)
+
+                pygame.draw.rect(screen, self.GREEN, yes_btn)
+                pygame.draw.rect(screen, self.RED, no_btn)
+
+                font = pygame.font.SysFont(None, 24)
+                text_surface = font.render("Вы действительно хотите очистить кэш?", True, self.BLACK)
+                screen.blit(text_surface,
+                            (confirm_box.centerx - text_surface.get_width() // 2, confirm_box.centery - 30))
+
+                text_surface = font.render("Да", True, self.BLACK)
+                screen.blit(text_surface, yes_btn.midtop)
+
+                text_surface = font.render("Нет", True, self.BLACK)
+                screen.blit(text_surface, no_btn.midtop)
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+                    if yes_btn.collidepoint(mouse_pos):
+                        self.clear_cache()
+                        self.confirm_clear_cache = False
+                    elif no_btn.collidepoint(mouse_pos):
+                        self.confirm_clear_cache = False
+
             if self.meme_generated:
                 screen.blit(self.current_meme, (544, 320))
 
             pygame.display.flip()
             clock.tick(self.FPS)
 
-    def load_random_line_from_file(self, file_path):
-        try:
-            with open(file_path, encoding="utf-8") as file:
-                lines = file.readlines()
-                if not lines:
-                    raise EmptyTextFileError(f"Файл '{file_path}' пуст или не найден.")
-                return random.choice(lines).strip()
-        except FileNotFoundError:
-            raise EmptyTextFileError(f"Файл '{file_path}' не найден.")
+    def clear_cache(self):
+        if os.path.exists(self.SAVE_FOLDER):
+            shutil.rmtree(self.SAVE_FOLDER)
+            os.makedirs(self.SAVE_FOLDER, exist_ok=True)
 
-    def create_meme(self, image_path, text):
-        original_image = Image.open(image_path).convert('RGBA')
-        width, height = original_image.size
+        if os.path.exists(self.DB_PATH):
+            os.remove(self.DB_PATH)
 
-        new_height = height + 128
-        new_image = Image.new('RGBA', (width, new_height), BLACK)
-        new_image.paste(original_image, (0, 0))
+        self.setup_database()
 
-        draw = ImageDraw.Draw(new_image)
+        self.meme_visible = False
+        self.meme_generated = False
+        self.current_meme = None
 
-        font_size = 48
-        max_attempts = 10
-
-        for attempt in range(max_attempts):
-            font = ImageFont.truetype("arial.ttf", size=font_size)
-            _, _, w, h = draw.textbbox((0, 0), text, font=font)
-
-            if w <= width:
-                break
-
-            font_size -= 5
-
-        x = (width - w) / 2
-        y = height + (new_height - height - h) / 2
-
-        draw.text((x, y), text, fill=WHITE, font=font)
-
-        return new_image
+        print("Кэш успешно очищен.")
 
     def show_meme_in_window(self, screen, img):
         self.current_meme = pygame.image.frombuffer(img.tobytes(), img.size, img.mode)
         self.meme_generated = True
 
     def generate_and_display_meme(self, screen):
-        if self.selected_mood is None:
-            raise NoMoodSelectedError("Сначала выберите настройку!")
+        if self.selected_theme is None:
+            raise ValueError("Сначала выберите тему!")
 
-        text_file = os.path.join(self.TEXTS_FOLDER, f"{self.selected_mood.lower()}.txt")
-        random_text = self.load_random_line_from_file(text_file)
+        random_text = self.mem_gen_up.select_random_text(self.selected_theme)
+        image_path = self.mem_gen_up.select_random_image()
 
-        images = [f for f in os.listdir(self.IMAGE_FOLDER)]
-        if not images:
-            raise MissingImagesFolderError("Нет изображений для создания мема.")
+        generator = random.choice([self.mem_gen_up, self.mem_gen_down])
+        self.current_direction = "Up" if isinstance(generator, MemUp) else "Down"
 
-        image_path = os.path.join(self.IMAGE_FOLDER, random.choice(images))
-
-        meme_image = self.create_meme(image_path, random_text)
+        meme_image = generator.add_text_to_image(image_path, random_text)
 
         self.show_meme_in_window(screen, meme_image)
 
-        conn = sqlite3.connect(self.DB_PATH)
-        cursor = conn.cursor()
-        cursor.execute("SELECT COUNT(*) FROM memes")
-        count = cursor.fetchone()[0]
-        next_number = count + 1
-
-        filename = f'mem_{str(next_number).zfill(4)}.png'
-        full_save_path = os.path.join(self.SAVE_FOLDER, filename)
-        meme_image.save(full_save_path)
-        print(f"Сохранено: {full_save_path}")
-
-        cursor.execute("INSERT INTO memes (id, mood) VALUES (?, ?)", (next_number, self.selected_mood))
-        conn.commit()
-        conn.close()
-
     def save_to_clipboard(self):
-        if not self.meme_generated:
-            raise MemeNotGeneratedError("Мем ещё не создан.")
-
-        pil_image = Image.frombytes(mode='RGBA',
-                                    size=self.current_meme.get_size(),
-                                    data=pygame.image.tostring(self.current_meme, 'RGBA'))
-
-        bgrx_data = bytearray()
-        pixels = pil_image.load()
-        width, height = pil_image.size
-        for y in range(height):
-            for x in range(width):
-                r, g, b, a = pixels[x, y]
-                bgrx_data.extend([b, g, r, 0])
-
-        win32clipboard.OpenClipboard()
-        win32clipboard.EmptyClipboard()
-        win32clipboard.SetClipboardData(win32clipboard.CF_DIB, bytes(bgrx_data))
-        win32clipboard.CloseClipboard()
-
-        print("Мем успешно скопирован в буфер обмена.")
+        pass
 
     def download_meme(self):
         if not self.meme_generated:
             raise MemeNotGeneratedError("Мем ещё не создан.")
 
-        pil_image = Image.frombytes(mode='RGBA',
-                                    size=self.current_meme.get_size(),
-                                    data=pygame.image.tostring(self.current_meme, 'RGBA'))
+        root = tk.Tk()
+        root.withdraw()
 
         conn = sqlite3.connect(self.DB_PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT MAX(id) FROM memes")
-        last_id = cursor.fetchone()[0]
+        result = cursor.fetchone()
         conn.close()
 
-        if last_id is None:
-            raise RuntimeError("Ошибка: мем не найден в базе данных.")
+        last_id = result[0] or 0
 
-        filename = f'mem_{str(last_id).zfill(4)}.png'
-        downloads_folder = os.path.expanduser("~/Downloads")
-        full_save_path = os.path.join(downloads_folder, filename)
-        pil_image.save(full_save_path)
-        print(f"Мем успешно скачался в {downloads_folder}.")
+        default_filename = f"mem_{last_id:04d}"
+
+        file_path = filedialog.asksaveasfilename(initialfile=f"{default_filename}.png",
+                                                 defaultextension=".png",
+                                                 initialdir=os.path.expanduser("~"),
+                                                 title="Сохранить мем",
+                                                 filetypes=(("PNG-файлы", "*.png"), ("Все файлы", "*.*")))
+
+        if not file_path:
+            return
+
+        pil_image = Image.frombytes(mode='RGBA',
+                                    size=self.current_meme.get_size(),
+                                    data=pygame.image.tostring(self.current_meme, 'RGBA'))
+
+        pil_image.save(file_path)
+        print(f"Мем успешно сохранён в {file_path}.")
+
+        direction = self.current_direction
+
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        filename = os.path.basename(file_path)
+
+        full_path = file_path
+
+        conn = sqlite3.connect(self.DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("""
+            UPDATE memes SET
+              theme = ?,
+              direction = ?,
+              creation_date = ?,
+              filename = ?,
+              path = ?
+            WHERE id = ?
+        """, (self.selected_theme, direction, now, filename, full_path, last_id))
+        conn.commit()
+        conn.close()
 
     def show_error_message(self, screen, message):
         font = pygame.font.SysFont(None, 36)
